@@ -1,13 +1,14 @@
 <script setup>
 import { ref, computed, reactive, watch } from 'vue'
 
+const c = JSON.parse(window.classes);
 const lzstring = window.LZString;
 
 const htmlElement = document.documentElement
 const data = ref("");
 const dataMessage = ref("");
 
-const user = new reactive({
+const user = reactive({
   currentPage: "planner",
   schedule: { ninth: [], tenth: [], eleventh: [], twelfth: [] },
   theme: "light"
@@ -18,6 +19,21 @@ user.schedule = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("
 user.currentPage = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).currentPage : user.currentPage
 
 htmlElement.setAttribute("data-bs-theme", user.theme)
+
+const catalogSearch = ref("")
+
+const filteredClasses = computed(() => {
+  if (catalogSearch.value) {
+    let filteredClasses = reactive({})
+    for (let course of Object.keys(c)) {
+      if (c[course].name.toLowerCase().includes(catalogSearch.value.toLowerCase())) filteredClasses[course] = c[course]
+    }
+    return filteredClasses
+  } else {
+    return reactive(c)
+  }
+
+})
 
 function exportData() {
   data.value = lzstring.compressToBase64(JSON.stringify(user))
@@ -113,6 +129,21 @@ watch(user, () => {
 
   <div class="container-fluid mt-5" v-show="user.currentPage == 'catalog'">
     <h4>Course Catalog</h4>
+    <input type="text" class="form-control specific-w-300 mx-auto mb-3" id="catalogSearch" placeholder="Enter course name here..." v-model="catalogSearch">
+    <div class="list-group mx-auto" style="max-width:650px">
+      <a href="#" @click.prevent="className.showing = !className.showing"
+        :class="(className.showing) ? 'list-group-item-secondary' : ''"
+        class="list-group-item list-group-item-action py-3" v-for="className in filteredClasses">
+        <span style="font-size:1rem;font-weight:bold;">{{ className.name }}</span>
+        <div class="container-fluid" v-show="className.showing">
+          <hr style="opacity:1">
+          Credits: {{ className.credits }}<br>
+          Description: {{ className.description }}<br>
+          Years: {{ className.years.toString() }}<br>
+          {{ (className.prerequisite) ? 'Prerequisite: ' + className.prerequisite : "" }}
+        </div>
+      </a>
+    </div>
   </div>
 </template>
 
