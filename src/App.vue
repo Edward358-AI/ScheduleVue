@@ -107,8 +107,8 @@ watch(user, () => {
     </div>
   </nav>
 
-  <div class="container-fluid mt-5" v-show="user.currentPage == 'settings'">
-    <h4 class="mb-5">Settings</h4>
+  <div class="container mt-5" v-show="user.currentPage == 'settings'">
+    <h4 class="mb-4">Settings</h4>
     <label for="themeselect" class="form-label">
       Theme:
       <select v-model="user.theme" class="form-select">
@@ -123,14 +123,15 @@ watch(user, () => {
     <span>{{ dataMessage }}</span>
   </div>
 
-  <div class="container-fluid mt-5" v-show="user.currentPage == 'planner'">
+  <div class="container mt-5" v-show="user.currentPage == 'planner'">
     <h4>Course Planner</h4>
   </div>
 
-  <div class="container-fluid mt-5" v-show="user.currentPage == 'catalog'">
+  <div class="container mt-5" v-show="user.currentPage == 'catalog'">
     <h4>Course Catalog</h4>
+    <p>A comprehensive list of all the courses offered across PUSD and some neighboring schools. Click on any course to see a description and use the search bar below to find a specific course.</p>
     <input type="text" class="form-control specific-w-300 mx-auto mb-3" id="catalogSearch" placeholder="Enter course name here..." v-model="catalogSearch">
-    <div class="list-group mx-auto" style="max-width:650px">
+    <div class="list-group mx-auto">
       <a href="#" @click.prevent="className.showing = !className.showing"
         :class="(className.showing) ? 'list-group-item-secondary' : ''"
         class="list-group-item list-group-item-action py-3" v-for="className in filteredClasses">
@@ -147,4 +148,8 @@ watch(user, () => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.container {
+  max-width: 650px;
+}
+</style>
