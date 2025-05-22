@@ -1,8 +1,9 @@
 <script setup>
 import { ref, computed, reactive, watch } from 'vue'
 
-const c = JSON.parse(window.classes);
+const c = reactive(JSON.parse(window.classes));
 const lzstring = window.LZString;
+const WINDOW = window;
 
 const htmlElement = document.documentElement
 const data = ref("");
@@ -10,7 +11,7 @@ const dataMessage = ref("");
 
 const user = reactive({
   currentPage: "planner",
-  schedule: { ninth: [], tenth: [], eleventh: [], twelfth: [] },
+  schedule: { ninth: { class1: "", class2: "", class3: "", class4: "", class5: "", class6: "" }, tenth: { class1: "", class2: "", class3: "", class4: "", class5: "", class6: "" }, eleventh: { class1: "", class2: "", class3: "", class4: "", class5: "", class6: "" }, twelfth: { class1: "", class2: "", class3: "", class4: "", class5: "", class6: "" } },
   theme: "light"
 })
 
@@ -30,7 +31,123 @@ const filteredClasses = computed(() => {
     }
     return filteredClasses
   } else {
-    return reactive(c)
+    return c
+  }
+
+})
+
+const freshman = computed(() => {
+  if (catalogSearch.value) {
+    let freshman = reactive({})
+    for (let course of Object.keys(c)) {
+      if (c[course].name.toLowerCase().includes(catalogSearch.value.toLowerCase()) && c[course].years.includes(9)) {
+        let selected = false;
+        for (let grade of Object.keys(user.schedule)) {
+          if (Object.values(user.schedule[grade]).includes(c[course].name)) selected = true;
+        }
+        if (!selected) freshman[course] = c[course]
+      }
+    }
+    return freshman
+  } else {
+    let freshman = reactive({})
+    for (let course of Object.keys(c)) {
+      if (c[course].years.includes(9)) {
+        let selected = false;
+        for (let grade of Object.keys(user.schedule)) {
+          if (Object.values(user.schedule[grade]).includes(c[course].name)) selected = true;
+        }
+        if (!selected) freshman[course] = c[course]
+      }
+    }
+    return freshman
+  }
+
+})
+
+const junior = computed(() => {
+  if (catalogSearch.value) {
+    let junior = reactive({})
+    for (let course of Object.keys(c)) {
+      if (c[course].name.toLowerCase().includes(catalogSearch.value.toLowerCase()) && c[course].years.includes(11)) {
+        let selected = false;
+        for (let grade of Object.keys(user.schedule)) {
+          if (Object.values(user.schedule[grade]).includes(c[course].name)) selected = true;
+        }
+        if (!selected) junior[course] = c[course]
+      }
+    }
+    return junior
+  } else {
+    let junior = reactive({})
+    for (let course of Object.keys(c)) {
+      if (c[course].years.includes(11)) {
+        let selected = false;
+        for (let grade of Object.keys(user.schedule)) {
+          if (Object.values(user.schedule[grade]).includes(c[course].name)) selected = true;
+        }
+        if (!selected) junior[course] = c[course]
+      }
+    }
+    return junior
+  }
+
+})
+
+const sophomore = computed(() => {
+  if (catalogSearch.value) {
+    let sophomore = reactive({})
+    for (let course of Object.keys(c)) {
+      if (c[course].name.toLowerCase().includes(catalogSearch.value.toLowerCase()) && c[course].years.includes(10)) {
+        let selected = false;
+        for (let grade of Object.keys(user.schedule)) {
+          if (Object.values(user.schedule[grade]).includes(c[course].name)) selected = true;
+        }
+        if (!selected) sophomore[course] = c[course]
+      }
+    }
+    return sophomore
+  } else {
+    let sophomore = reactive({})
+    for (let course of Object.keys(c)) {
+      if (c[course].years.includes(10)) {
+        let selected = false;
+        for (let grade of Object.keys(user.schedule)) {
+          if (Object.values(user.schedule[grade]).includes(c[course].name)) selected = true;
+        }
+        if (!selected) sophomore[course] = c[course]
+      }
+    }
+    return sophomore
+  }
+
+})
+
+const senior = computed(() => {
+  if (catalogSearch.value) {
+    let senior = reactive({})
+    for (let course of Object.keys(c)) {
+      if (c[course].name.toLowerCase().includes(catalogSearch.value.toLowerCase()) && c[course].years.includes(12)) {
+        let selected = false;
+        for (let grade of Object.keys(user.schedule)) {
+          if (Object.values(user.schedule[grade]).includes(c[course].name)) selected = true;
+        }
+        if (!selected) senior[course] = c[course]
+      }
+    }
+    return senior
+  } else {
+    let senior = reactive({})
+    for (let course of Object.keys(c)) {
+      if (c[course].years.includes(12)) {
+        let selected = false;
+        for (let grade of Object.keys(user.schedule)) {
+          if (Object.values(user.schedule[grade]).includes(c[course].name)) selected = true;
+        }
+        if (!selected) senior[course] = c[course]
+      }
+    }
+    return senior
   }
 
 })
@@ -65,6 +182,7 @@ function importData() {
 }
 
 watch(user, () => {
+  catalogSearch.value = ""
   localStorage.setItem("user", JSON.stringify(user))
   htmlElement.setAttribute("data-bs-theme", user.theme)
 })
@@ -118,19 +236,105 @@ watch(user, () => {
     </label><br><br>
     <span>Import/Export Course Data: </span><br>
     <button class="btn btn-secondary me-3" @click="exportData()">Export</button>
-    <button class="btn btn-secondary" @click="importData()">Import</button><br><br>
+    <button class="btn btn-secondary me-3" @click="importData()">Import</button>
+    <button class="btn btn-secondary" @click='WINDOW.localStorage.clear();WINDOW.location.reload()'>Clear Data</button><br><br>
     <textarea v-model="data">{{ data }}</textarea><br>
     <span>{{ dataMessage }}</span>
   </div>
 
-  <div class="container mt-5" v-show="user.currentPage == 'planner'">
+  <div class="container-fluid container-triple-xl mt-5" v-show="user.currentPage == 'planner'">
     <h4>Course Planner</h4>
+    <p>This a four-year planner designed to help you plan out your four years in high school.</p>
+    <div class="row mt-5">
+      <div class="col">
+        <strong style="font-size:1.1rem;">9th</strong>
+        <div class="dropdown dropdown-center my-3" v-for="userClass in Object.keys(user.schedule.ninth)">
+          <button style="min-width: 300px" class="btn btn-secondary dropdown-toggle py-2" type="button"
+            data-bs-toggle="dropdown" aria-expanded="false">
+            {{ user.schedule.ninth[userClass] != "" ? user.schedule.ninth[userClass] : "+ Select Course" }}
+          </button>
+          <div class="dropdown-menu course-select bg-body">
+            <div style="" class="container-fluid py-2 course-selector bg-body">
+              <button class="btn btn-secondary my-2 mx-auto block"
+                @click.prevent="user.schedule.ninth[userClass] = ''">Clear
+                Selection</button>
+              <input type="text" class="form-control my-1 mx-auto block" placeholder="Enter course name..."
+                v-model="catalogSearch">
+            </div>
+            <a href="#" @click="user.schedule.ninth[userClass] = className.name" class="dropdown-item"
+              v-for="className in freshman" style="text-wrap:wrap;">{{ className.name }}</a>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <strong style="font-size:1.1rem;">10th</strong>
+        <div class="dropdown dropdown-center my-3" v-for="userClass in Object.keys(user.schedule.tenth)">
+          <button style="min-width: 300px" class="btn btn-secondary dropdown-toggle py-2" type="button"
+            data-bs-toggle="dropdown" aria-expanded="false">
+            {{ user.schedule.tenth[userClass] != "" ? user.schedule.tenth[userClass] : "+ Select Course" }}
+          </button>
+          <div class="dropdown-menu course-select bg-body">
+            <div style="" class="container-fluid py-2 course-selector bg-body">
+              <button class="btn btn-secondary my-2 mx-auto block"
+                @click.prevent="user.schedule.tenth[userClass] = ''">Clear
+                Selection</button>
+              <input type="text" class="form-control my-1 mx-auto block" placeholder="Enter course name..."
+                v-model="catalogSearch">
+            </div>
+            <a href="#" @click="user.schedule.tenth[userClass] = className.name" class="dropdown-item"
+              v-for="className in sophomore" style="text-wrap:wrap;">{{ className.name }}</a>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <strong style="font-size:1.1rem;">11th</strong>
+        <div class="dropdown dropdown-center my-3" v-for="userClass in Object.keys(user.schedule.eleventh)">
+          <button style="min-width: 300px" class="btn btn-secondary dropdown-toggle py-2" type="button"
+            data-bs-toggle="dropdown" aria-expanded="false">
+            {{ user.schedule.eleventh[userClass] != "" ? user.schedule.eleventh[userClass] : "+ Select Course" }}
+          </button>
+          <div class="dropdown-menu course-select bg-body">
+            <div style="" class="container-fluid py-2 course-selector bg-body">
+              <button class="btn btn-secondary my-2 mx-auto block"
+                @click.prevent="user.schedule.eleventh[userClass] = ''">Clear
+                Selection</button>
+              <input type="text" class="form-control my-1 mx-auto block" placeholder="Enter course name..."
+                v-model="catalogSearch">
+            </div>
+            <a href="#" @click="user.schedule.eleventh[userClass] = className.name" class="dropdown-item"
+              v-for="className in junior" style="text-wrap:wrap;">{{ className.name }}</a>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <strong style="font-size:1.1rem;">12th</strong>
+        <div class="dropdown dropdown-center my-3" v-for="userClass in Object.keys(user.schedule.twelfth)">
+          <button style="min-width: 300px" class="btn btn-secondary dropdown-toggle py-2" type="button"
+            data-bs-toggle="dropdown" aria-expanded="false">
+            {{ user.schedule.twelfth[userClass] != "" ? user.schedule.twelfth[userClass] : "+ Select Course" }}
+          </button>
+          <div class="dropdown-menu course-select bg-body">
+            <div style="" class="container-fluid py-2 course-selector bg-body">
+              <button class="btn btn-secondary my-2 mx-auto block"
+                @click.prevent="user.schedule.twelfth[userClass] = ''">Clear
+                Selection</button>
+              <input type="text" class="form-control my-1 mx-auto block" placeholder="Enter course name..."
+                v-model="catalogSearch">
+            </div>
+            <a href="#" @click="user.schedule.twelfth[userClass] = className.name" class="dropdown-item"
+              v-for="className in senior" style="text-wrap:wrap;">{{ className.name }}</a>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="container mt-5" v-show="user.currentPage == 'catalog'">
     <h4>Course Catalog</h4>
-    <p>A comprehensive list of all the courses offered across PUSD and some neighboring schools. Click on any course to see a description and use the search bar below to find a specific course.</p>
-    <input type="text" class="form-control specific-w-300 mx-auto mb-3" id="catalogSearch" placeholder="Enter course name here..." v-model="catalogSearch">
+    <p>A comprehensive list of all the courses offered across PUSD and some neighboring schools. Click on any course to
+      see a description and use the search bar below to find a specific course.</p>
+    <input type="text" class="form-control specific-w-300 mx-auto mb-3" id="catalogSearch"
+      placeholder="Enter course name here..." v-model="catalogSearch">
     <div class="list-group mx-auto">
       <a href="#" @click.prevent="className.showing = !className.showing"
         :class="(className.showing) ? 'list-group-item-secondary' : ''"
@@ -151,5 +355,26 @@ watch(user, () => {
 <style scoped>
 .container {
   max-width: 650px;
+}
+
+.course-select {
+  width: 300px;
+  max-height: 300px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.course-selector {
+  position: sticky;
+  top: -5px;
+}
+
+.block {
+  display: block;
+  width: 100%;
+}
+
+.container-triple-xl {
+  max-width: 1500px;
 }
 </style>
