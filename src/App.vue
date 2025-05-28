@@ -1,8 +1,10 @@
 <script setup>
 import { ref, computed, reactive, watch } from 'vue'
+import pako from 'pako'
 
 const c = reactive(JSON.parse(window.classes));
-const lzstring = window.LZString;
+const decoder = new TextDecoder();
+const encoder = new TextEncoder();
 const WINDOW = window;
 
 const htmlElement = document.documentElement
@@ -16,14 +18,14 @@ const user = reactive({
 })
 
 if(localStorage.getItem("user")) {
-  user.theme = JSON.parse(localStorage.getItem("user")).theme
+  user.theme = JSON.parse(localStorage.getItem("user")).theme;
 }
 else {
   if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    user.theme = "dark"
+    user.theme = "dark";
   }
   else {
-    user.theme = "light"
+    user.theme = "light";
   }
 }
 user.schedule = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).schedule : user.schedule
@@ -162,8 +164,40 @@ const senior = computed(() => {
 
 })
 
+function bytesArrToBase64(arr) {
+  const abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"; // base64 alphabet
+  const bin = n => n.toString(2).padStart(8,0); // convert num to 8-bit binary string
+  const l = arr.length
+  let result = '';
+
+  for(let i=0; i<=(l-1)/3; i++) {
+    let c1 = i*3+1>=l; // case when "=" is on end
+    let c2 = i*3+2>=l; // case when "=" is on end
+    let chunk = bin(arr[3*i]) + bin(c1? 0:arr[3*i+1]) + bin(c2? 0:arr[3*i+2]);
+    let r = chunk.match(/.{1,6}/g).map((x,j)=> j==3&&c2 ? '=' :(j==2&&c1 ? '=':abc[+('0b'+x)]));  
+    result += r.join('');
+  }
+
+  return result;
+}
+
+function base64ToBytesArr(str) {
+  const abc = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"]; // base64 alphabet
+  let result = [];
+
+  for(let i=0; i<str.length/4; i++) {
+    let chunk = [...str.slice(4*i,4*i+4)]
+    let bin = chunk.map(x=> abc.indexOf(x).toString(2).padStart(6,0)).join(''); 
+    let bytes = bin.match(/.{1,8}/g).map(x=> +('0b'+x));
+    result.push(...bytes.slice(0,3 - (str[4*i+2]=="=") - (str[4*i+3]=="=")));
+  }
+  return result;
+}
+
 function exportData() {
-  data.value = lzstring.compressToBase64(JSON.stringify(user))
+  const user_encoded = encoder.encode(JSON.stringify(user));
+  const user_compressed = pako.deflate(user_encoded);
+  data.value = bytesArrToBase64(user_compressed);
   dataMessage.value = "Successfully exported data. Copy and paste the text below."
   setTimeout(() => {
     dataMessage.value = "";
@@ -171,9 +205,13 @@ function exportData() {
 }
 
 function importData() {
-  if (data.value.trim() && data.value.length % 4 === 0 && lzstring.decompressFromBase64(data.value)) {
+  data.value = data.value.trim();
+  if (data.value.length % 4 === 0) {
+    const user_compressed = base64ToBytesArr(data.value);
+    const user_decompressed = pako.inflate(user_compressed);
+    const user_decoded = decoder.decode(user_decompressed);
     if (confirm("Are you sure you want to import this data?")) {
-      localStorage.setItem("user", lzstring.decompressFromBase64(data.value))
+      localStorage.setItem("user", user_decoded);
       user.theme = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).theme : user.theme
       user.schedule = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).schedule : user.schedule
       user.currentPage = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).currentPage : user.currentPage
