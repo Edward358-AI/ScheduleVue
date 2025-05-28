@@ -15,7 +15,17 @@ const user = reactive({
   theme: "light"
 })
 
-user.theme = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).theme : user.theme
+if(localStorage.getItem("user")) {
+  user.theme = JSON.parse(localStorage.getItem("user")).theme
+}
+else {
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    user.theme = "dark"
+  }
+  else {
+    user.theme = "light"
+  }
+}
 user.schedule = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).schedule : user.schedule
 user.currentPage = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).currentPage : user.currentPage
 
