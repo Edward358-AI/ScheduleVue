@@ -13,7 +13,7 @@ const dataMessage = ref("");
 
 const user = reactive({
   currentPage: "planner",
-  schedule: { ninth: { class1: "", class2: "", class3: "", class4: "", class5: "", class6: "" }, tenth: { class1: "", class2: "", class3: "", class4: "", class5: "", class6: "" }, eleventh: { class1: "", class2: "", class3: "", class4: "", class5: "", class6: "" }, twelfth: { class1: "", class2: "", class3: "", class4: "", class5: "", class6: "" } },
+  schedule: { ninth: { class1: "", class2: "", class3: "", class4: "", class5: "", class6: "", class7: "", class8: "" }, tenth: { class1: "", class2: "", class3: "", class4: "", class5: "", class6: "", class7: "", class8: "" }, eleventh: { class1: "", class2: "", class3: "", class4: "", class5: "", class6: "", class7: "", class8: "" }, twelfth: { class1: "", class2: "", class3: "", class4: "", class5: "", class6: "", class7: "", class8: "" } },
   theme: "light"
 })
 
@@ -55,7 +55,7 @@ const freshman = computed(() => {
       if (c[course].name.toLowerCase().includes(catalogSearch.value.toLowerCase()) && c[course].years.includes(9)) {
         let selected = false;
         for (let grade of Object.keys(user.schedule)) {
-          if (Object.values(user.schedule[grade]).includes(c[course].name)) selected = true;
+          if (Object.values(user.schedule[grade]).includes(c[course])) selected = true;
         }
         if (!selected) freshman[course] = c[course]
       }
@@ -67,7 +67,7 @@ const freshman = computed(() => {
       if (c[course].years.includes(9)) {
         let selected = false;
         for (let grade of Object.keys(user.schedule)) {
-          if (Object.values(user.schedule[grade]).includes(c[course].name)) selected = true;
+          if (Object.values(user.schedule[grade]).includes(c[course])) selected = true;
         }
         if (!selected) freshman[course] = c[course]
       }
@@ -84,7 +84,7 @@ const junior = computed(() => {
       if (c[course].name.toLowerCase().includes(catalogSearch.value.toLowerCase()) && c[course].years.includes(11)) {
         let selected = false;
         for (let grade of Object.keys(user.schedule)) {
-          if (Object.values(user.schedule[grade]).includes(c[course].name)) selected = true;
+          if (Object.values(user.schedule[grade]).includes(c[course])) selected = true;
         }
         if (!selected) junior[course] = c[course]
       }
@@ -96,7 +96,7 @@ const junior = computed(() => {
       if (c[course].years.includes(11)) {
         let selected = false;
         for (let grade of Object.keys(user.schedule)) {
-          if (Object.values(user.schedule[grade]).includes(c[course].name)) selected = true;
+          if (Object.values(user.schedule[grade]).includes(c[course])) selected = true;
         }
         if (!selected) junior[course] = c[course]
       }
@@ -113,7 +113,7 @@ const sophomore = computed(() => {
       if (c[course].name.toLowerCase().includes(catalogSearch.value.toLowerCase()) && c[course].years.includes(10)) {
         let selected = false;
         for (let grade of Object.keys(user.schedule)) {
-          if (Object.values(user.schedule[grade]).includes(c[course].name)) selected = true;
+          if (Object.values(user.schedule[grade]).includes(c[course])) selected = true;
         }
         if (!selected) sophomore[course] = c[course]
       }
@@ -125,7 +125,7 @@ const sophomore = computed(() => {
       if (c[course].years.includes(10)) {
         let selected = false;
         for (let grade of Object.keys(user.schedule)) {
-          if (Object.values(user.schedule[grade]).includes(c[course].name)) selected = true;
+          if (Object.values(user.schedule[grade]).includes(c[course])) selected = true;
         }
         if (!selected) sophomore[course] = c[course]
       }
@@ -142,7 +142,7 @@ const senior = computed(() => {
       if (c[course].name.toLowerCase().includes(catalogSearch.value.toLowerCase()) && c[course].years.includes(12)) {
         let selected = false;
         for (let grade of Object.keys(user.schedule)) {
-          if (Object.values(user.schedule[grade]).includes(c[course].name)) selected = true;
+          if (Object.values(user.schedule[grade]).includes(c[course])) selected = true;
         }
         if (!selected) senior[course] = c[course]
       }
@@ -154,7 +154,7 @@ const senior = computed(() => {
       if (c[course].years.includes(12)) {
         let selected = false;
         for (let grade of Object.keys(user.schedule)) {
-          if (Object.values(user.schedule[grade]).includes(c[course].name)) selected = true;
+          if (Object.values(user.schedule[grade]).includes(c[course])) selected = true;
         }
         if (!selected) senior[course] = c[course]
       }
@@ -164,35 +164,44 @@ const senior = computed(() => {
 
 })
 
-function bytesArrToBase64(arr) {
-  const abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"; // base64 alphabet
-  const bin = n => n.toString(2).padStart(8,0); // convert num to 8-bit binary string
-  const l = arr.length
-  let result = '';
+// const creditsForGrad = computed(() => {
+//   // math
+//   for (let grade of user.schedule) {
+//     if 
+//   }
+// })
 
-  for(let i=0; i<=(l-1)/3; i++) {
-    let c1 = i*3+1>=l; // case when "=" is on end
-    let c2 = i*3+2>=l; // case when "=" is on end
-    let chunk = bin(arr[3*i]) + bin(c1? 0:arr[3*i+1]) + bin(c2? 0:arr[3*i+2]);
-    let r = chunk.match(/.{1,6}/g).map((x,j)=> j==3&&c2 ? '=' :(j==2&&c1 ? '=':abc[+('0b'+x)]));  
-    result += r.join('');
+const freshmanCredits = computed(() => {
+  let sum = 0
+  for (let val of Object.values(user.schedule.ninth)) {
+    if (val != "") sum += val.credits
   }
+  return sum
+})
 
-  return result;
-}
-
-function base64ToBytesArr(str) {
-  const abc = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"]; // base64 alphabet
-  let result = [];
-
-  for(let i=0; i<str.length/4; i++) {
-    let chunk = [...str.slice(4*i,4*i+4)]
-    let bin = chunk.map(x=> abc.indexOf(x).toString(2).padStart(6,0)).join(''); 
-    let bytes = bin.match(/.{1,8}/g).map(x=> +('0b'+x));
-    result.push(...bytes.slice(0,3 - (str[4*i+2]=="=") - (str[4*i+3]=="=")));
+const sophCredits = computed(() => {
+  let sum = 0
+  for (let val of Object.values(user.schedule.tenth)) {
+    if (val != "") sum += val.credits
   }
-  return result;
-}
+  return sum
+})
+
+const juniorCredits = computed(() => {
+  let sum = 0
+  for (let val of Object.values(user.schedule.eleventh)) {
+    if (val != "") sum += val.credits
+  }
+  return sum
+})
+
+const seniorCredits = computed(() => {
+  let sum = 0
+  for (let val of Object.values(user.schedule.twelfth)) {
+    if (val != "") sum += val.credits
+  }
+  return sum
+})
 
 function exportData() {
   const user_encoded = encoder.encode(JSON.stringify(user));
@@ -296,10 +305,11 @@ watch(user, () => {
     <div class="row mt-5">
       <div class="col">
         <strong style="font-size:1.1rem;">9th</strong>
+        <p>Credits: {{ freshmanCredits }}</p>
         <div class="dropdown dropdown-center my-3" v-for="userClass in Object.keys(user.schedule.ninth)">
           <button style="min-width: 300px" class="btn btn-secondary dropdown-toggle py-2" type="button"
             data-bs-toggle="dropdown" aria-expanded="false">
-            {{ user.schedule.ninth[userClass] != "" ? user.schedule.ninth[userClass] : "+ Select Course" }}
+            {{ user.schedule.ninth[userClass] != "" ? user.schedule.ninth[userClass].name : "+ Select Course" }}
           </button>
           <div class="dropdown-menu course-select bg-body">
             <div style="" class="container-fluid py-2 course-selector bg-body">
@@ -309,17 +319,18 @@ watch(user, () => {
               <input type="text" class="form-control my-1 mx-auto block" placeholder="Enter course name..."
                 v-model="catalogSearch">
             </div>
-            <a href="#" @click="user.schedule.ninth[userClass] = className.name" class="dropdown-item"
+            <a href="#" @click="user.schedule.ninth[userClass] = className" class="dropdown-item"
               v-for="className in freshman" style="text-wrap:wrap;">{{ className.name }}</a>
           </div>
         </div>
       </div>
       <div class="col">
         <strong style="font-size:1.1rem;">10th</strong>
+        <p>Credits: {{ sophCredits }}</p>
         <div class="dropdown dropdown-center my-3" v-for="userClass in Object.keys(user.schedule.tenth)">
           <button style="min-width: 300px" class="btn btn-secondary dropdown-toggle py-2" type="button"
             data-bs-toggle="dropdown" aria-expanded="false">
-            {{ user.schedule.tenth[userClass] != "" ? user.schedule.tenth[userClass] : "+ Select Course" }}
+            {{ user.schedule.tenth[userClass] != "" ? user.schedule.tenth[userClass].name : "+ Select Course" }}
           </button>
           <div class="dropdown-menu course-select bg-body">
             <div style="" class="container-fluid py-2 course-selector bg-body">
@@ -329,17 +340,18 @@ watch(user, () => {
               <input type="text" class="form-control my-1 mx-auto block" placeholder="Enter course name..."
                 v-model="catalogSearch">
             </div>
-            <a href="#" @click="user.schedule.tenth[userClass] = className.name" class="dropdown-item"
+            <a href="#" @click="user.schedule.tenth[userClass] = className" class="dropdown-item"
               v-for="className in sophomore" style="text-wrap:wrap;">{{ className.name }}</a>
           </div>
         </div>
       </div>
       <div class="col">
         <strong style="font-size:1.1rem;">11th</strong>
+        <p>Credits: {{ juniorCredits }}</p>
         <div class="dropdown dropdown-center my-3" v-for="userClass in Object.keys(user.schedule.eleventh)">
           <button style="min-width: 300px" class="btn btn-secondary dropdown-toggle py-2" type="button"
             data-bs-toggle="dropdown" aria-expanded="false">
-            {{ user.schedule.eleventh[userClass] != "" ? user.schedule.eleventh[userClass] : "+ Select Course" }}
+            {{ user.schedule.eleventh[userClass] != "" ? user.schedule.eleventh[userClass].name : "+ Select Course" }}
           </button>
           <div class="dropdown-menu course-select bg-body">
             <div style="" class="container-fluid py-2 course-selector bg-body">
@@ -349,17 +361,18 @@ watch(user, () => {
               <input type="text" class="form-control my-1 mx-auto block" placeholder="Enter course name..."
                 v-model="catalogSearch">
             </div>
-            <a href="#" @click="user.schedule.eleventh[userClass] = className.name" class="dropdown-item"
+            <a href="#" @click="user.schedule.eleventh[userClass] = className" class="dropdown-item"
               v-for="className in junior" style="text-wrap:wrap;">{{ className.name }}</a>
           </div>
         </div>
       </div>
       <div class="col">
         <strong style="font-size:1.1rem;">12th</strong>
+        <p>Credits: {{ seniorCredits }}</p>
         <div class="dropdown dropdown-center my-3" v-for="userClass in Object.keys(user.schedule.twelfth)">
           <button style="min-width: 300px" class="btn btn-secondary dropdown-toggle py-2" type="button"
             data-bs-toggle="dropdown" aria-expanded="false">
-            {{ user.schedule.twelfth[userClass] != "" ? user.schedule.twelfth[userClass] : "+ Select Course" }}
+            {{ user.schedule.twelfth[userClass] != "" ? user.schedule.twelfth[userClass].name : "+ Select Course" }}
           </button>
           <div class="dropdown-menu course-select bg-body">
             <div style="" class="container-fluid py-2 course-selector bg-body">
@@ -369,7 +382,7 @@ watch(user, () => {
               <input type="text" class="form-control my-1 mx-auto block" placeholder="Enter course name..."
                 v-model="catalogSearch">
             </div>
-            <a href="#" @click="user.schedule.twelfth[userClass] = className.name" class="dropdown-item"
+            <a href="#" @click="user.schedule.twelfth[userClass] = className" class="dropdown-item"
               v-for="className in senior" style="text-wrap:wrap;">{{ className.name }}</a>
           </div>
         </div>
