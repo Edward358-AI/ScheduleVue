@@ -336,7 +336,7 @@ watch(user, () => {
     <p>This a four-year planner designed to help you plan out your four years in high school.</p>
     <div class="row mt-5">
       <div class="col">
-        <strong style="font-size:1.1rem;">9th</strong>
+        <img src="./assets/Grade 9.png" alt="Grade" width="24" height="24" class="d-inline-block align-text-top">
         <p>Credits: {{ freshmanCredits }}</p>
         <div class="dropdown dropdown-center my-3" v-for="userClass in Object.keys(user.schedule.ninth)">
           <button style="min-width: 300px" class="btn btn-secondary dropdown-toggle py-2" type="button"
@@ -357,7 +357,7 @@ watch(user, () => {
         </div>
       </div>
       <div class="col">
-        <strong style="font-size:1.1rem;">10th</strong>
+        <img src="./assets/Grade 10.png" alt="Grade" width="24" height="24" class="d-inline-block align-text-top">
         <p>Credits: {{ sophCredits }}</p>
         <div class="dropdown dropdown-center my-3" v-for="userClass in Object.keys(user.schedule.tenth)">
           <button style="min-width: 300px" class="btn btn-secondary dropdown-toggle py-2" type="button"
@@ -378,7 +378,7 @@ watch(user, () => {
         </div>
       </div>
       <div class="col">
-        <strong style="font-size:1.1rem;">11th</strong>
+        <img src="./assets/Grade 11.png" alt="Grade" width="24" height="24" class="d-inline-block align-text-top">
         <p>Credits: {{ juniorCredits }}</p>
         <div class="dropdown dropdown-center my-3" v-for="userClass in Object.keys(user.schedule.eleventh)">
           <button style="min-width: 300px" class="btn btn-secondary dropdown-toggle py-2" type="button"
@@ -399,7 +399,7 @@ watch(user, () => {
         </div>
       </div>
       <div class="col">
-        <strong style="font-size:1.1rem;">12th</strong>
+        <img src="./assets/Grade 12.png" alt="Grade" width="24" height="24" class="d-inline-block align-text-top">
         <p>Credits: {{ seniorCredits }}</p>
         <div class="dropdown dropdown-center my-3" v-for="userClass in Object.keys(user.schedule.twelfth)">
           <button style="min-width: 300px" class="btn btn-secondary dropdown-toggle py-2" type="button"
