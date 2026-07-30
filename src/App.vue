@@ -1,8 +1,9 @@
 <script setup>
 import { ref, computed, reactive, watch } from 'vue'
 import pako from 'pako'
+import classesData from './classes.js'
 
-const c = reactive(JSON.parse(window.classes));
+const c = reactive(JSON.parse(classesData));
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 const WINDOW = window;
